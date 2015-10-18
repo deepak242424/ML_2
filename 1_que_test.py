@@ -53,9 +53,20 @@ pre_activation_l2 = np.dot(activation_l1, W2)
 activation_l2 = sigmoid(pre_activation_l2)
 
 loss = compute_loss(Y_vec, activation_l2)
-print compute_loss(Y_vec, activation_l2, deriv=True).shape
-print sigmoid(activation_l2, deriv=True).shape
-print activation_l1.shape
-d_loss_d_beta = sigmoid(activation_l2, deriv=True)
+delta_beta = compute_loss(Y_vec, activation_l2, deriv=True)*sigmoid(activation_l2, deriv=True)
+#print compute_loss(Y_vec, activation_l2, deriv=True).shape
+#print sigmoid(activation_l2, deriv=True).shape
+#print activation_l1.shape
+
+d_loss_d_beta = np.zeros((activation_l1.shape[0], activation_l1.shape[1], activation_l2.shape[1]))
+for i in range(d_loss_d_beta.shape[0]):
+    for j in range(d_loss_d_beta.shape[1]):
+        d_loss_d_beta[i][j] = activation_l1[i][j] * delta_beta[i]
+
+for i in range(d_loss_d_beta.shape[0]):
+    for j in range(d_loss_d_beta.shape[1]):
+
+#delta_alpha = delta_beta*
+
 
 #print loss

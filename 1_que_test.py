@@ -16,6 +16,8 @@ def get_data(class_name, te_tr, class_index):
     fea_vecs = cPickle.load(pickle_file)
     pickle_file.close()
     fea_vecs = np.asarray(fea_vecs)
+    #bias = np.ones((fea_vecs.shape[0],1))
+    #fea_vecs = np.concatenate((fea_vecs, bias),axis=1)
     target = np.zeros((fea_vecs.shape[0], out_size))
     target[:,class_index] = 1
     return fea_vecs, target
@@ -37,8 +39,9 @@ def compute_loss(true_y, predicted_y, deriv = False):
     return np.mean(np.power(np.subtract(true_y, predicted_y),2))
 
 #---------------- Global Variables ------------------------
-in_size = 96
-hi_size = 48
+# Here 1 is added to account for bias
+in_size = 96+1
+hi_size = 48+1
 out_size = 4
 lrate = .001
 n_epochs = 500
@@ -59,10 +62,15 @@ X, Y = get_data(class_name='mountain', te_tr='Train', class_index = 3)
 X_vec = np.concatenate((X_vec, X), axis=0)
 Y_vec = np.concatenate((Y_vec, Y), axis=0)
 
+X_vec = normalize(X_vec)
+bias = np.ones((X_vec.shape[0],1))
+X_vec = np.concatenate((X_vec, bias),axis=1)
+
+#pre_activation_l1 = normalize(pre_activation_l1)
+
 #def train(X_vec, Y_vec):
 for epoch in range(n_epochs):
     pre_activation_l1 = np.dot(X_vec, W1)
-    pre_activation_l1 = normalize(pre_activation_l1)
     activation_l1 = sigmoid(pre_activation_l1)
     pre_activation_l2 = np.dot(activation_l1, W2)
     activation_l2 = sigmoid(pre_activation_l2)
@@ -105,8 +113,12 @@ test_X, test_Y = get_data(class_name='mountain', te_tr='Test', class_index = 3)
 test_X_vec = np.concatenate((test_X_vec, test_X), axis=0)
 test_Y_vec = np.concatenate((test_Y_vec, test_Y), axis=0)
 
+test_X_vec = normalize(test_X_vec)
+bias = np.ones((test_X_vec.shape[0],1))
+test_X_vec = np.concatenate((test_X_vec, bias),axis=1)
+
 pre_activation_l1 = np.dot(test_X_vec, W1)
-pre_activation_l1 = normalize(pre_activation_l1)
+
 activation_l1 = sigmoid(pre_activation_l1)
 pre_activation_l2 = np.dot(activation_l1, W2)
 activation_l2 = sigmoid(pre_activation_l2)
